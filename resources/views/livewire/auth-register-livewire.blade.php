@@ -3,7 +3,7 @@
         <div class="card-body">
             <div>
                 <div class="text-center">
-                    <img src="/logo.png" alt="Logo">
+                    <img src="/cash-flow.png" alt="Logo" class="img-fluid" style="max-width: 120px;">
                     <h2>Mendaftar</h2>
                 </div>
                 <hr>
