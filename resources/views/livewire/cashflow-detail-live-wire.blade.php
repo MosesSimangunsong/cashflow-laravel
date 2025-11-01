@@ -69,8 +69,6 @@
             <!-- [MODIFIED] Menampilkan Catatan (Notes) dari Trix Editor -->
             <h5>Catatan Tambahan:</h5>
             @if ($cashflow->notes)
-                <!-- [PENTING] Render HTML dari Trix Editor menggunakan {!! ... !!} -->
-                <!-- Kita beri class 'trix-content' agar style-nya sama (jika Anda load CSS Trix) -->
                 <div class="trix-content">
                     {!! $cashflow->notes !!}
                 </div>
@@ -80,6 +78,5 @@
         </div>
     </div>
 
-    {{-- [MODIFIED] Ganti path modal dari 'todos' ke 'flowcharts' --}}
-    @include('components.modals.flowcharts.edit-cover')
+    @include('components.modals.cashflows.edit-cover')
 </div>

@@ -170,7 +170,7 @@
     </div>
 
     {{-- [MODIFIED] Ganti path include modal dari 'todos' ke 'flowcharts' --}}
-    @include('components.modals.flowcharts.add')
-    @include('components.modals.flowcharts.edit')
-    @include('components.modals.flowcharts.delete')
+    @include('components.modals.cashflows.add')
+    @include('components.modals.cashflows.edit')
+    @include('components.modals.cashflows.delete')
 </div>

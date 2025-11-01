@@ -18,7 +18,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary" @if (!$editCoverCashflowfile) disabled @endif>
+                    <button type="submit" class="btn btn-primary" @if (!$editAttachmentFile) disabled @endif>
                         Simpan
                     </button>
                 </div>
