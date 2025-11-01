@@ -48,7 +48,7 @@ class CashflowDetailLivewire extends Component
         // [MODIFIED] Mengarahkan ke view 'cashflow-detail-livewire'
         // Anda perlu membuat file view: 
         // resources/views/livewire/cashflow-detail-livewire.blade.php
-        return view('livewire.cashflow-detail-livewire');
+        return view('livewire.cashflow-detail-live-wire');
     }
 
     // [MODIFIED] Mengganti "Cover" (Todo) menjadi "Attachment" (Cashflow)
