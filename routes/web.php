@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\AuthController;
@@ -13,8 +12,14 @@ Route::group(['prefix' => 'auth'], function () {
 
 Route::group(['prefix' => 'app', 'middleware' => 'check.auth'], function () {
     Route::get('/home', [HomeController::class, 'index'])->name('app.home');
+
+    // [MODIFIED]
+    // 1. Mengganti URL dari 'todos/{todo_id}' menjadi 'cashflow/{cashflow_id}'
+    // 2. Mengganti method dari 'todoDetail' menjadi 'cashflowDetail'
+    // 3. Mengganti nama rute dari 'app.todos.detail' menjadi 'app.cashflows.detail'
+    Route::get('/cashflow/{cashflow_id}', [HomeController::class, 'cashflowDetail'])->name('app.cashflows.detail');
 });
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('app.home');
 });
