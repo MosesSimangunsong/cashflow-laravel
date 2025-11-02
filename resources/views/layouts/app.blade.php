@@ -2,21 +2,15 @@
 <html lang="id">
 
 <head>
-    {{-- Meta --}}
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    {{-- Icon --}}
-    <link rel="icon" href="/logo.png" type="image/x-icon" />
-
-    {{-- Judul --}}
-    <title>Cashflow</title>
+    {{-- ... (meta, icon, judul) ... --}}
 
     {{-- Styles --}}
     @livewireStyles
     <link rel="stylesheet" href="/assets/vendor/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
 </head>
 
 <body class="bg-light">
@@ -25,29 +19,62 @@
     </div>
 
     {{-- Scripts --}}
+    
+    <script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+
     <script src="/assets/vendor/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @livewireScripts
+    
     <script>
         document.addEventListener("livewire:initialized", () => {
+            
+            // Listener untuk menutup modal (Sudah ada)
             Livewire.on("closeModal", (data) => {
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById(data.id)
-                );
-                if (modal) {
-                    modal.hide();
+                const modalEl = document.getElementById(data.id);
+                if (modalEl) {
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) {
+                        modal.hide();
+                    }
                 }
             });
 
+            // Listener untuk membuka modal (Sudah ada)
             Livewire.on("showModal", (data) => {
-                const modal = bootstrap.Modal.getOrCreateInstance(
-                    document.getElementById(data.id)
-                );
-                if (modal) {
-                    modal.show();
+                const modalEl = document.getElementById(data.id);
+                if (modalEl) {
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    if (modal) {
+                        modal.show();
+                    }
                 }
             });
+
+            // [NEW] Listener untuk SweetAlert (Kebutuhan SweetAlert)
+            Livewire.on('showSweetAlert', (data) => {
+                Swal.fire({
+                    icon: data.icon,
+                    title: data.title,
+                    text: data.text,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            });
+
+            // [NEW] Listener untuk Trix Editor (Kebutuhan Trix Editor)
+            Livewire.on('setTrixContent', (data) => {
+                const trixEditor = document.getElementById(data.id);
+                if (trixEditor) {
+                    trixEditor.editor.loadHTML(data.content);
+                }
+            });
+
         });
     </script>
-    @livewireScripts
 </body>
 
 </html>

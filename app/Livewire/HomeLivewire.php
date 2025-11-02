@@ -235,12 +235,21 @@ class HomeLivewire extends Component
     }
 
     // [MODIFIED] Nama fungsi dari deleteTodo()
-    public function deleteCashflow(){
-    // Cek konfirmasi, buat jadi case-insensitive (memperbaiki UX)
-    if (strtolower($this->deleteConfirmText) !== 'hapus') {
-        $this->addError('deleteConfirmText', 'Ketik "HAPUS" untuk mengonfirmasi penghapusan.');
-        return;
-    }
+    public function deleteCashflow()
+    {
+        // Validasi konfirmasi "HAPUS"
+        // Kita gunakan strtolower agar tidak case-sensitive (lebih ramah pengguna)
+        if (strtolower($this->deleteConfirmText) !== 'hapus') {
+            
+            // [FIX] Jangan gunakan addError. Dispatch SweetAlert sebagai gantinya.
+            $this->dispatch('showSweetAlert', [
+                'icon' => 'error', 
+                'title' => 'Konfirmasi Gagal', 
+                'text' => 'Anda harus mengetik "HAPUS" dengan benar untuk melanjutkan.'
+            ]);
+            
+            return; // Berhenti di sini
+        }
 
         // [SECURITY FIX] Ambil data dan pastikan milik user
         $cashflow = Cashflow::where('id', $this->deleteCashflowId)
@@ -248,7 +257,12 @@ class HomeLivewire extends Component
                             ->first();
 
         if (!$cashflow) {
-            $this->dispatch('showSweetAlert', ['icon' => 'error', 'title' => 'Gagal', 'text' => 'Data tidak ditemukan!']);
+            // [FIX] Dispatch alert jika data tidak ditemukan
+            $this->dispatch('showSweetAlert', [
+                'icon' => 'error', 
+                'title' => 'Gagal', 
+                'text' => 'Data tidak ditemukan!'
+            ]);
             return;
         }
 
@@ -267,6 +281,10 @@ class HomeLivewire extends Component
         $this->dispatch('closeModal', id: 'deleteCashflowModal');
         
         // [NEW] Kebutuhan SweetAlert: Kirim notifikasi sukses
-        $this->dispatch('showSweetAlert', ['icon' => 'success', 'title' => 'Berhasil', 'text' => 'Catatan cashflow telah dihapus!']);
+        $this->dispatch('showSweetAlert', [
+            'icon' => 'success', 
+            'title' => 'Berhasil', 
+            'text' => 'Catatan cashflow telah dihapus!'
+        ]);
     }
 }
