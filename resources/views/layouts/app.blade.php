@@ -5,6 +5,7 @@
     {{-- ... (meta, icon, judul) ... --}}
 
     {{-- Styles --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles
     <link rel="stylesheet" href="/assets/vendor/bootstrap-5.3.8-dist/css/bootstrap.min.css">
     
@@ -31,23 +32,38 @@
     <script>
         document.addEventListener("livewire:initialized", () => {
             
-            // Listener untuk menutup modal (Sudah ada)
+            // Listener untuk menutup modal
             Livewire.on("closeModal", (data) => {
                 const modalEl = document.getElementById(data.id);
                 if (modalEl) {
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) {
                         modal.hide();
+                        // Bersihkan backdrop modal jika masih ada
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) {
+                            backdrop.remove();
+                        }
+                        // Hapus class modal-open dari body
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
                     }
                 }
             });
 
-            // Listener untuk membuka modal (Sudah ada)
+            // Listener untuk membuka modal
             Livewire.on("showModal", (data) => {
                 const modalEl = document.getElementById(data.id);
                 if (modalEl) {
                     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                     if (modal) {
+                        // Bersihkan backdrop lama jika ada
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) {
+                            backdrop.remove();
+                        }
+                        document.body.classList.remove('modal-open');
                         modal.show();
                     }
                 }

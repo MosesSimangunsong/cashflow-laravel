@@ -2,14 +2,13 @@
 
 namespace App\Livewire;
 
-// [MODIFIED] Menggunakan Model Cashflow, bukan Todo
 use App\Models\Cashflow;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-// [NEW] Menambahkan trait untuk Upload File (Attachment) dan Pagination
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Livewire\Attributes\On;
 
 class HomeLivewire extends Component
 {
@@ -209,82 +208,90 @@ class HomeLivewire extends Component
 
     // --- (3) Delete Cashflow (Hapus Data) ---
 
-    // [MODIFIED] Properti disesuaikan dengan modal 'delete.blade.php'
-    public $deleteCashflowId;
-    public $deleteCashflowDescription; // Untuk ditampilkan di modal
-    public $deleteCashflowAmount; // Untuk ditampilkan di modal
-    public $deleteConfirmText; // Untuk konfirmasi 'HAPUS'
+    // Properties for delete operation
+    public $deleteCashflowDescription;
+    public $deleteCashflowAmount;
+    public $deleteConfirmText = '';
 
-    // [MODIFIED] Nama fungsi dari prepareDeleteTodo()
+    public $deleteId;
+
     public function prepareDeleteCashflow($id)
     {
-        // [SECURITY FIX] Pastikan data milik user yang login
-        $cashflow = Cashflow::where('id', $id)->where('user_id', $this->auth->id)->first();
-        if (!$cashflow) {
+        $this->deleteId = $id;
+        $cashflow = Cashflow::find($id);
+        
+        if (!$cashflow || $cashflow->user_id !== $this->auth->id) {
+            $this->dispatch('showSweetAlert', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'Data tidak ditemukan'
+            ]);
             return;
         }
 
-        // [MODIFIED] Isi properti 'delete'
-        $this->deleteCashflowId = $cashflow->id;
+        // Simpan informasi untuk ditampilkan di modal
         $this->deleteCashflowDescription = $cashflow->description;
         $this->deleteCashflowAmount = $cashflow->amount;
-        $this->deleteConfirmText = ''; // Kosongkan input konfirmasi
-
-        // [MODIFIED] Tampilkan modal 'delete'
+        
+        // Reset konfirmasi
+        $this->deleteConfirmText = '';
+        
+        // Tampilkan modal via Livewire event listener di layout (showModal)
         $this->dispatch('showModal', id: 'deleteCashflowModal');
     }
 
     // [MODIFIED] Nama fungsi dari deleteTodo()
     public function deleteCashflow()
     {
-        // Validasi konfirmasi "HAPUS"
-        // Kita gunakan strtolower agar tidak case-sensitive (lebih ramah pengguna)
         if (strtolower($this->deleteConfirmText) !== 'hapus') {
-            
-            // [FIX] Jangan gunakan addError. Dispatch SweetAlert sebagai gantinya.
             $this->dispatch('showSweetAlert', [
                 'icon' => 'error', 
                 'title' => 'Konfirmasi Gagal', 
-                'text' => 'Anda harus mengetik "HAPUS" dengan benar untuk melanjutkan.'
-            ]);
-            
-            return; // Berhenti di sini
-        }
-
-        // [SECURITY FIX] Ambil data dan pastikan milik user
-        $cashflow = Cashflow::where('id', $this->deleteCashflowId)
-                            ->where('user_id', $this->auth->id)
-                            ->first();
-
-        if (!$cashflow) {
-            // [FIX] Dispatch alert jika data tidak ditemukan
-            $this->dispatch('showSweetAlert', [
-                'icon' => 'error', 
-                'title' => 'Gagal', 
-                'text' => 'Data tidak ditemukan!'
+                'text' => 'Ketik "HAPUS" untuk konfirmasi'
             ]);
             return;
         }
 
-        // [NEW] Kebutuhan Olah Gambar: Hapus file attachment (jika ada) sebelum hapus data
-        if ($cashflow->attachment && Storage::disk('public')->exists($cashflow->attachment)) {
-            Storage::disk('public')->delete($cashflow->attachment);
+        try {
+            $cashflow = Cashflow::where('id', $this->deleteId)
+                               ->where('user_id', $this->auth->id)
+                               ->first();
+
+            if (!$cashflow) {
+                $this->dispatch('showSweetAlert', [
+                    'icon' => 'error',
+                    'title' => 'Error',
+                    'text' => 'Data tidak ditemukan'
+                ]);
+                return;
+            }
+
+            // Hapus file attachment jika ada
+            if ($cashflow->attachment) {
+                Storage::disk('public')->delete($cashflow->attachment);
+            }
+
+            $cashflow->delete();
+
+            // Tutup modal
+                // Tutup modal via Livewire event listener di layout (closeModal)
+                $this->dispatch('closeModal', id: 'deleteCashflowModal');
+
+            // Reset form dan state
+            $this->reset(['deleteId', 'deleteCashflowDescription', 'deleteCashflowAmount', 'deleteConfirmText']);
+
+            $this->dispatch('showSweetAlert', [
+                'icon' => 'success',
+                'title' => 'Berhasil',
+                'text' => 'Data berhasil dihapus'
+            ]);
+
+        } catch (\Exception $e) {
+            $this->dispatch('showSweetAlert', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'Gagal menghapus data: ' . $e->getMessage()
+            ]);
         }
-
-        // [MODIFIED] Hapus data dari database
-        $cashflow->delete();
-
-        // [MODIFIED] Reset properti 'delete'
-        $this->reset(['deleteCashflowId', 'deleteCashflowDescription', 'deleteCashflowAmount', 'deleteConfirmText']);
-        
-        // [MODIFIED] Tutup modal 'delete'
-        $this->dispatch('closeModal', id: 'deleteCashflowModal');
-        
-        // [NEW] Kebutuhan SweetAlert: Kirim notifikasi sukses
-        $this->dispatch('showSweetAlert', [
-            'icon' => 'success', 
-            'title' => 'Berhasil', 
-            'text' => 'Catatan cashflow telah dihapus!'
-        ]);
     }
 }
