@@ -55,20 +55,7 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Bukti (Opsional)</label>
-                        <input type="file" class="form-control" wire:model="editAttachment">
-                        <div wire:loading wire:target="editAttachment" class="text-muted mt-1">Uploading...</div>
-                        @if (isset($editAttachment) && is_object($editAttachment))
-                            <img src="{{ $editAttachment->temporaryUrl() }}" class="img-fluid rounded mt-2" style="max-height: 150px;">
-                        @elseif(isset($editAttachment) && is_string($editAttachment))
-                            {{-- existing path --}}
-                            <img src="{{ asset('storage/' . $editAttachment) }}" class="img-fluid rounded mt-2" style="max-height: 150px;">
-                        @endif
-                        @error('editAttachment')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    
 
                 </div>
                 <div class="modal-footer">

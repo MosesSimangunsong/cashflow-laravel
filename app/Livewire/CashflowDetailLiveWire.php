@@ -18,6 +18,11 @@ class CashflowDetailLivewire extends Component
     public $cashflow;
     public $auth;
 
+    // [MODIFIED] Mengganti "Cover" (Todo) menjadi "Attachment" (Cashflow)
+    // Properties untuk modal edit attachment
+    public $editAttachmentFile = null; // File yang akan diupload
+    public $currentAttachment = null; // Path attachment yang sedang aktif
+
     public function mount()
     {
         $this->auth = Auth::user();
@@ -41,6 +46,11 @@ class CashflowDetailLivewire extends Component
 
         // [MODIFIED] Assign ke properti $cashflow
         $this->cashflow = $targetCashflow;
+        
+        // Inisialisasi attachment yang ada (jika ada)
+        if ($this->cashflow && $this->cashflow->attachment) {
+            $this->currentAttachment = $this->cashflow->attachment;
+        }
     }
 
     public function render()
@@ -50,10 +60,6 @@ class CashflowDetailLivewire extends Component
         // resources/views/livewire/cashflow-detail-livewire.blade.php
         return view('livewire.cashflow-detail-live-wire');
     }
-
-    // [MODIFIED] Mengganti "Cover" (Todo) menjadi "Attachment" (Cashflow)
-    // Properti ini untuk menampung file yang di-upload
-    public $editAttachmentFile;
 
     // [MODIFIED] Mengganti nama fungsi editCoverTodo menjadi editAttachment
     public function editAttachment()
@@ -80,6 +86,9 @@ class CashflowDetailLivewire extends Component
             // [MODIFIED] Menyimpan path ke properti 'attachment' di model
             $this->cashflow->attachment = $path;
             $this->cashflow->save();
+
+            // Update currentAttachment after successful save
+            $this->currentAttachment = $path;
         }
 
         // [MODIFIED] Reset properti file setelah selesai
@@ -94,5 +103,29 @@ class CashflowDetailLivewire extends Component
             'title' => 'Berhasil', 
             'text' => 'Bukti (Attachment) berhasil diperbarui!'
         ]);
+    }
+
+    public function deleteAttachment()
+    {
+        if ($this->cashflow->attachment && Storage::disk('public')->exists($this->cashflow->attachment)) {
+            Storage::disk('public')->delete($this->cashflow->attachment);
+            $this->cashflow->attachment = null;
+            $this->cashflow->save();
+            
+            // Update currentAttachment after successful deletion
+            $this->currentAttachment = null;
+
+            $this->dispatch('showSweetAlert', [
+                'icon' => 'success',
+                'title' => 'Berhasil',
+                'text' => 'Bukti (Attachment) berhasil dihapus!'
+            ]);
+        } else {
+            $this->dispatch('showSweetAlert', [
+                'icon' => 'error',
+                'title' => 'Gagal',
+                'text' => 'Bukti (Attachment) tidak ditemukan!'
+            ]);
+        }
     }
 }

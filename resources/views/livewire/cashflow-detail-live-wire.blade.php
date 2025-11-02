@@ -47,36 +47,48 @@
         <div class="card-body">
             
             <!-- [MODIFIED] Menampilkan Bukti (Attachment) -->
-            <h5>Bukti (Attachment)</h5>
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="mb-0">Bukti (Attachment)</h5>
+                <div>
+                    @if ($cashflow->attachment)
+                        <button class="btn btn-sm btn-outline-danger" wire:click="deleteAttachment" 
+                                onclick="return confirm('Apakah Anda yakin ingin menghapus bukti ini?')">
+                            <i class="fas fa-trash-alt"></i> Hapus Bukti
+                        </button>
+                    @endif
+                </div>
+            </div>
+
             @if ($cashflow->attachment)
                 <!-- Tampilkan gambar jika ada (klik untuk memperbesar) -->
-                <a href="{{ asset('storage/' . $cashflow->attachment) }}" target="_blank" rel="noopener noreferrer" 
-                   title="Lihat gambar penuh">
-                    <img src="{{ asset('storage/' . $cashflow->attachment) }}" alt="Bukti Cashflow" 
-                         class="img-fluid rounded border mb-3" 
-                         style="max-height: 400px; max-width: 100%; object-fit: cover;">
-                </a>
+                <div class="position-relative">
+                    <a href="{{ asset('storage/' . $cashflow->attachment) }}" target="_blank" rel="noopener noreferrer" 
+                       title="Klik untuk melihat gambar penuh">
+                        <img src="{{ asset('storage/' . $cashflow->attachment) }}" alt="Bukti Cashflow" 
+                             class="img-fluid rounded border" 
+                             style="max-height: 400px; max-width: 100%; object-fit: contain;">
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-dark bg-opacity-75">
+                                <i class="fas fa-search-plus"></i> Klik untuk memperbesar
+                            </span>
+                        </div>
+                    </a>
+                </div>
             @else
                 <!-- Tampilkan placeholder jika tidak ada attachment -->
-                <div class="text-center text-muted border rounded p-4 mb-3">
-                    <i class="fas fa-image fa-3x"></i>
-                    <p class="mt-2 mb-0">Tidak ada bukti (attachment) yang diunggah.</p>
+                <div class="text-center text-muted border rounded p-4">
+                    <i class="fas fa-file-image fa-3x mb-2"></i>
+                    <p class="mb-1">Tidak ada bukti (attachment) yang diunggah.</p>
+                    <small>Klik tombol "Ubah Bukti" untuk mengunggah bukti baru.</small>
                 </div>
             @endif
             
             <hr>
 
             <!-- [MODIFIED] Menampilkan Catatan (Notes) dari Trix Editor -->
-            <h5>Catatan Tambahan:</h5>
-            @if ($cashflow->notes)
-                <div class="trix-content">
-                    {!! $cashflow->notes !!}
-                </div>
-            @else
-                <p class="text-muted"><em>Tidak ada catatan tambahan.</em></p>
-            @endif
+           
         </div>
     </div>
 
-    @include('components.modals.cashflows.edit-cover')
+    @include('components.modals.cashflows.edit-attachment')
 </div>

@@ -143,16 +143,8 @@
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button wire:click="prepareDeleteCashflow({{ $cashflow->id }})" 
-                                            class="btn btn-sm btn-danger" 
-                                            wire:loading.attr="disabled"
-                                            wire:target="prepareDeleteCashflow({{ $cashflow->id }})"
-                                            title="Hapus">
-                                        <span wire:loading.remove wire:target="prepareDeleteCashflow({{ $cashflow->id }})">
-                                            <i class="fas fa-trash"></i>
-                                        </span>
-                                        <span wire:loading wire:target="prepareDeleteCashflow({{ $cashflow->id }})">
-                                            <i class="fas fa-spinner fa-spin"></i>
-                                        </span>
+                                            class="btn btn-sm btn-danger" title="Hapus">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
