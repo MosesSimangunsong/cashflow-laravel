@@ -29,7 +29,7 @@
                         <input 
                                     type="text" 
                                     class="form-control @error('deleteConfirmText') is-invalid @enderror" 
-                                    wire:model="deleteConfirmText" 
+                                    wire:model.defer="deleteConfirmText" 
                                     placeholder="HAPUS"
                                 >
                         
