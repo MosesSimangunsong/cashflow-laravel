@@ -235,13 +235,12 @@ class HomeLivewire extends Component
     }
 
     // [MODIFIED] Nama fungsi dari deleteTodo()
-    public function deleteCashflow()
-    {
-        // [MODIFIED] Validasi konfirmasi "HAPUS"
-        if (strtoupper($this->deleteConfirmText) !== 'HAPUS') {
-            $this->addError('deleteConfirmText', 'Ketik "HAPUS" untuk mengonfirmasi penghapusan.');
-            return;
-        }
+    public function deleteCashflow(){
+    // Cek konfirmasi, buat jadi case-insensitive (memperbaiki UX)
+    if (strtolower($this->deleteConfirmText) !== 'hapus') {
+        $this->addError('deleteConfirmText', 'Ketik "HAPUS" untuk mengonfirmasi penghapusan.');
+        return;
+    }
 
         // [SECURITY FIX] Ambil data dan pastikan milik user
         $cashflow = Cashflow::where('id', $this->deleteCashflowId)

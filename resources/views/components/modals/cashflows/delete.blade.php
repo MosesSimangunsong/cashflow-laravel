@@ -26,7 +26,12 @@
                     <div class="mb-3">
                         <label class="form-label">Untuk konfirmasi, ketik <strong>HAPUS</strong> di bawah ini:</label>
                         
-                        <input type="text" class="form-control" wire:model="deleteConfirmText" placeholder="HAPUS">
+                        <input 
+                                    type="text" 
+                                    class="form-control @error('deleteConfirmText') is-invalid @enderror" 
+                                    wire:model="deleteConfirmText" 
+                                    placeholder="HAPUS"
+                                >
                         
                         @error('deleteConfirmText')
                             <span class="text-danger">{{ $message }}</span>
