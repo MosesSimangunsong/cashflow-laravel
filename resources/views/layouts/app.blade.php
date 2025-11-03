@@ -2,32 +2,36 @@
 <html lang="id">
 
 <head>
-    {{-- ... (meta, icon, judul) ... --}}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'Cashflow Manager') }}</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     {{-- Styles --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles
     <link rel="stylesheet" href="/assets/vendor/bootstrap-5.3.8-dist/css/bootstrap.min.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
 </head>
 
 <body class="bg-light">
     <div class="container-fluid">
-        @yield('content')
+        @hasSection('content')
+            @yield('content')
+        @else
+            {{ $slot ?? '' }}
+        @endif
     </div>
 
     {{-- Scripts --}}
-    
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
-
     <script src="/assets/vendor/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     @livewireScripts
+
+    @stack('scripts')
     
     <script>
         document.addEventListener("livewire:initialized", () => {
@@ -91,6 +95,7 @@
 
         });
     </script>
+    @stack('scripts')
 </body>
 
 </html>

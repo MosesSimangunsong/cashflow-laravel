@@ -128,4 +128,49 @@ class CashflowDetailLivewire extends Component
             ]);
         }
     }
+
+    public function getMonthlyCashflowStats()
+    {
+        $startDate = now()->subMonths(11)->startOfMonth();
+        $endDate = now()->endOfMonth();
+
+        $monthlyStats = Cashflow::where('user_id', $this->auth->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->selectRaw('EXTRACT(YEAR FROM date) as year, EXTRACT(MONTH FROM date) as month, type, SUM(amount) as total')
+            ->groupBy('year', 'month', 'type')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+
+        $monthlyData = [];
+        $currentDate = $startDate->copy();
+
+        while ($currentDate <= $endDate) {
+            $year = $currentDate->year;
+            $month = $currentDate->month;
+            
+            $income = $monthlyStats
+                ->where('year', $year)
+                ->where('month', $month)
+                ->where('type', 'income')
+                ->first();
+
+            $expense = $monthlyStats
+                ->where('year', $year)
+                ->where('month', $month)
+                ->where('type', 'expense')
+                ->first();
+
+            $monthlyData[] = [
+                'month' => $currentDate->isoFormat('MMMM YYYY'),
+                'income' => $income ? $income->total : 0,
+                'expense' => $expense ? $expense->total : 0,
+                'balance' => ($income ? $income->total : 0) - ($expense ? $expense->total : 0)
+            ];
+
+            $currentDate->addMonth();
+        }
+
+        return $monthlyData;
+    }
 }

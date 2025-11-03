@@ -15,6 +15,56 @@ class HomeLivewire extends Component
     // [NEW] Menggunakan trait yang di-import
     use WithFileUploads, WithPagination;
 
+    public function getMonthlyCashflowStats()
+    {
+        $startDate = now()->subMonths(11)->startOfMonth();
+        $endDate = now()->endOfMonth();
+
+        $monthlyStats = Cashflow::where('user_id', $this->auth->id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->selectRaw('EXTRACT(YEAR FROM date) as year, EXTRACT(MONTH FROM date) as month, type, SUM(amount) as total')
+            ->groupBy('year', 'month', 'type')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+
+        $monthlyData = [];
+        $currentDate = $startDate->copy();
+
+        $cumulativeBalance = 0;
+        while ($currentDate <= $endDate) {
+            $year = $currentDate->year;
+            $month = $currentDate->month;
+
+            $income = $monthlyStats
+                ->where('year', $year)
+                ->where('month', $month)
+                ->where('type', 'income')
+                ->first();
+
+            $expense = $monthlyStats
+                ->where('year', $year)
+                ->where('month', $month)
+                ->where('type', 'expense')
+                ->first();
+
+            $incomeVal = $income ? $income->total : 0;
+            $expenseVal = $expense ? $expense->total : 0;
+            $cumulativeBalance += $incomeVal - $expenseVal;
+
+            $monthlyData[] = [
+                'month' => $currentDate->isoFormat('MMMM YYYY'),
+                'income' => $incomeVal,
+                'expense' => $expenseVal,
+                'balance' => $cumulativeBalance
+            ];
+
+            $currentDate->addMonth();
+        }
+
+        return $monthlyData;
+    }
+
     public $auth;
 
     // [NEW] Kebutuhan Pencarian & Filter
@@ -125,11 +175,16 @@ class HomeLivewire extends Component
         // [MODIFIED] Reset semua properti form 'add'
         $this->reset(['addDate', 'addType', 'addAmount', 'addDescription', 'addNotes', 'addAttachment']);
 
-        // [MODIFIED] Tutup modal yang sesuai
-        $this->dispatch('closeModal', id: 'addCashflowModal');
 
-        // [NEW] Kebutuhan SweetAlert: Kirim notifikasi sukses
-        $this->dispatch('showSweetAlert', ['icon' => 'success', 'title' => 'Berhasil', 'text' => 'Catatan cashflow berhasil ditambahkan!']);
+    // Reset pagination to show new data
+    $this->resetPage();
+    $this->dispatch('closeModal', id: 'addCashflowModal');
+
+    // [NEW] Trigger chart update
+    $this->dispatch('updateChart');
+
+    // [NEW] Kebutuhan SweetAlert: Kirim notifikasi sukses
+    $this->dispatch('showSweetAlert', ['icon' => 'success', 'title' => 'Berhasil', 'text' => 'Catatan cashflow berhasil ditambahkan!']);
     }
 
     // --- (2) Edit Cashflow (Ubah Data) ---
@@ -199,11 +254,16 @@ class HomeLivewire extends Component
         // [MODIFIED] Reset properti 'edit'
         $this->reset(['editCashflowId', 'editDate', 'editType', 'editAmount', 'editDescription', 'editNotes']);
         
-        // [MODIFIED] Tutup modal 'edit'
-        $this->dispatch('closeModal', id: 'editCashflowModal');
-        
-        // [NEW] Kebutuhan SweetAlert: Kirim notifikasi sukses
-        $this->dispatch('showSweetAlert', ['icon' => 'success', 'title' => 'Berhasil', 'text' => 'Catatan cashflow berhasil diperbarui!']);
+
+    // Reset pagination to show updated data
+    $this->resetPage();
+    $this->dispatch('closeModal', id: 'editCashflowModal');
+
+    // [NEW] Trigger chart update
+    $this->dispatch('updateChart');
+
+    // [NEW] Kebutuhan SweetAlert: Kirim notifikasi sukses
+    $this->dispatch('showSweetAlert', ['icon' => 'success', 'title' => 'Berhasil', 'text' => 'Catatan cashflow berhasil diperbarui!']);
     }
 
     // --- (3) Delete Cashflow (Hapus Data) ---
@@ -273,9 +333,13 @@ class HomeLivewire extends Component
 
             $cashflow->delete();
 
-            // Tutup modal
-                // Tutup modal via Livewire event listener di layout (closeModal)
-                $this->dispatch('closeModal', id: 'deleteCashflowModal');
+
+            // Reset pagination to show updated data
+            $this->resetPage();
+            $this->dispatch('closeModal', id: 'deleteCashflowModal');
+
+            // [NEW] Trigger chart update
+            $this->dispatch('updateChart');
 
             // Reset form dan state
             $this->reset(['deleteId', 'deleteCashflowDescription', 'deleteCashflowAmount', 'deleteConfirmText']);

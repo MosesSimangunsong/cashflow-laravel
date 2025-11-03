@@ -52,6 +52,177 @@
                 </div>
             </div>
 
+            @push('scripts')
+            <!-- ApexCharts JS -->
+            <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+            <script>
+                let chart = null;
+
+                document.addEventListener('livewire:initialized', function() {
+                    initializeChart();
+
+                    Livewire.on('updateChart', () => {
+                        if (chart) {
+                            chart.destroy();
+                        }
+                        initializeChart();
+                    });
+                });
+
+                function initializeChart() {
+                    // Clear existing chart if any
+                    if (chart) {
+                        chart.destroy();
+                    }
+
+                    const chartDiv = document.querySelector("#cashflowChart");
+                    if (!chartDiv) return;
+                    @this.getMonthlyCashflowStats().then(function(data) {
+                        const months = data.map(item => item.month);
+                        const incomes = data.map(item => item.income);
+                        const expenses = data.map(item => item.expense);
+                        const balances = data.map(item => item.balance);
+
+                        const saldoLastIndex = balances.length - 1;
+                        const options = {
+                            series: [
+                                {
+                                    name: 'Pemasukan',
+                                    type: 'line',
+                                    data: incomes
+                                },
+                                {
+                                    name: 'Pengeluaran',
+                                    type: 'line',
+                                    data: expenses
+                                },
+                                {
+                                    name: 'Saldo',
+                                    type: 'line',
+                                    data: balances
+                                }
+                            ],
+                            chart: {
+                                height: 350,
+                                type: 'line',
+                                toolbar: {
+                                    show: true,
+                                    tools: {
+                                        download: true,
+                                        selection: false,
+                                        zoom: false,
+                                        zoomin: false,
+                                        zoomout: false,
+                                        pan: false,
+                                    }
+                                }
+                            },
+                            dataLabels: {
+                                enabled: false
+                            },
+                            stroke: {
+                                width: [2, 2, 3],
+                                curve: 'smooth'
+                            },
+                            markers: {
+                                size: [6, 6, 0], // income & expense: all points, saldo: no marker except discrete
+                                shape: 'circle',
+                                strokeWidth: 2,
+                                hover: {
+                                    size: 8
+                                },
+                                discrete: [
+                                    {
+                                        seriesIndex: 2, // saldo
+                                        dataPointIndex: saldoLastIndex,
+                                        fillColor: '#17a2b8',
+                                        strokeColor: '#17a2b8',
+                                        size: 8,
+                                        shape: 'circle'
+                                    }
+                                ]
+                            },
+                            title: {
+                                text: 'Statistik Keuangan Per Bulan',
+                                align: 'center'
+                            },
+                            xaxis: {
+                                categories: months,
+                            },
+                            yaxis: [{
+                                axisTicks: {
+                                    show: true,
+                                },
+                                axisBorder: {
+                                    show: true,
+                                    color: '#008FFB'
+                                },
+                                labels: {
+                                    style: {
+                                        colors: '#008FFB',
+                                    },
+                                    formatter: function (value) {
+                                        return value.toLocaleString('id-ID', { 
+                                            style: 'currency', 
+                                            currency: 'IDR',
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        });
+                                    }
+                                },
+                                title: {
+                                    text: "Jumlah (Rp)",
+                                    style: {
+                                        color: '#008FFB',
+                                    }
+                                },
+                                tooltip: {
+                                    enabled: true
+                                }
+                            }],
+                            tooltip: {
+                                y: {
+                                    formatter: function (value) {
+                                        return value.toLocaleString('id-ID', { 
+                                            style: 'currency', 
+                                            currency: 'IDR',
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        });
+                                    }
+                                }
+                            },
+                            legend: {
+                                horizontalAlign: 'center',
+                            },
+                            colors: ['#28a745', '#dc3545', '#17a2b8'],
+                        };
+
+                        chart = new ApexCharts(document.querySelector("#cashflowChart"), options);
+                        chart.render();
+
+                        // Update chart when Livewire updates
+                        document.addEventListener('livewire:update', function() {
+                            chart.updateOptions({
+                                series: [{
+                                    name: 'Pemasukan',
+                                    type: 'column',
+                                    data: incomes
+                                }, {
+                                    name: 'Pengeluaran',
+                                    type: 'column',
+                                    data: expenses
+                                }, {
+                                    name: 'Saldo',
+                                    type: 'line',
+                                    data: balances
+                                }]
+                            });
+                        });
+                    });
+                }
+            </script>
+            @endpush
         </div>
     </div>
 
@@ -74,7 +245,7 @@
                         <div class="col-md-3">
                             <label class="form-label">Cari Keterangan</label>
                             <input type="text" class="form-control" placeholder="Cari..." 
-                                   wire:model.live.debounce.300ms="search">
+                                   wire:model.debounce.300ms="search">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Jenis</label>
