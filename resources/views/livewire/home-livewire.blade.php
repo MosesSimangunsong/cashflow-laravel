@@ -245,10 +245,14 @@
                         <div class="col-md-3">
                             <label class="form-label">Cari Keterangan</label>
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Cari..." wire:model.defer="search">
-                                <button class="btn btn-primary" wire:click="searchCashflow" type="button">
+                                
+                                <input type="text" class="form-control" placeholder="Cari..." 
+                                    wire:model.live.debounce.300ms="search">
+
+                                <button class="btn btn-primary" type="button">
                                     <i class="fas fa-search"></i> Cari
                                 </button>
+
                             </div>
                         </div>
                         <div class="col-md-3">

@@ -84,18 +84,17 @@ class HomeLivewire extends Component
 
     public function updated($propertyName)
     {
-        // Kita hanya ingin me-reset halaman jika filter 'live' (dropdown jenis
-        // atau input tanggal) berubah.
-        // Properti 'search' tidak di-handle di sini karena
-        // pagination-nya sudah di-handle oleh method 'searchCashflow()'.
-        if (in_array($propertyName, ['filterType', 'filterDateStart', 'filterDateEnd'])) {
+        // Jika properti yang berubah adalah salah satu dari filter...
+        if (in_array($propertyName, ['search', 'filterType', 'filterDateStart', 'filterDateEnd'])) {
+            // ...maka reset pagination ke halaman 1.
             $this->resetPage();
         }
     }
 
     public function render()
     {
-        // [MODIFIED] Query dasar: hanya ambil data milik user yang login
+        // ... (Tidak perlu ada perubahan di method render)
+        // Logika query Anda di sini sudah benar.
         $query = Cashflow::where('user_id', $this->auth->id);
 
         // [NEW] Terapkan Filter Tipe
@@ -103,9 +102,10 @@ class HomeLivewire extends Component
             $query->where('type', $this->filterType);
         }
 
-        // [NEW] Terapkan Filter Pencarian (Description)
+        // [NEW] Terapkan Filter Pencarian (Description, case-insensitive)
         if ($this->search) {
-            $query->where('description', 'like', '%' . $this->search . '%');
+            // Gunakan ILIKE untuk PostgreSQL agar pencarian tidak case sensitive
+            $query->whereRaw('description ILIKE ?', ['%' . $this->search . '%']);
         }
         
         // [NEW] Terapkan Filter Tanggal
