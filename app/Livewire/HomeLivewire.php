@@ -78,8 +78,19 @@ class HomeLivewire extends Component
         $this->auth = Auth::user();
 
         // [NEW] Inisialisasi filter tanggal (opsional, contoh: bulan ini)
-        $this->filterDateStart = now()->startOfMonth()->format('Y-m-d');
-        $this->filterDateEnd = now()->endOfMonth()->format('Y-m-d');
+        // $this->filterDateStart = now()->startOfMonth()->format('Y-m-d');
+        // $this->filterDateEnd = now()->endOfMonth()->format('Y-m-d');
+    }
+
+    public function updated($propertyName)
+    {
+        // Kita hanya ingin me-reset halaman jika filter 'live' (dropdown jenis
+        // atau input tanggal) berubah.
+        // Properti 'search' tidak di-handle di sini karena
+        // pagination-nya sudah di-handle oleh method 'searchCashflow()'.
+        if (in_array($propertyName, ['filterType', 'filterDateStart', 'filterDateEnd'])) {
+            $this->resetPage();
+        }
     }
 
     public function render()
