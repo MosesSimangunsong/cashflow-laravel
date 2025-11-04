@@ -127,6 +127,7 @@ class HomeLivewire extends Component
         return view('livewire.home-livewire', $data);
     }
 
+    // (Sudah ada method searchCashflow, hapus duplikat)
     // --- (1) Add Cashflow (Tambah Data) ---
 
     // [MODIFIED] Properti disesuaikan dengan modal 'add.blade.php'
@@ -349,7 +350,6 @@ class HomeLivewire extends Component
                 'title' => 'Berhasil',
                 'text' => 'Data berhasil dihapus'
             ]);
-
         } catch (\Exception $e) {
             $this->dispatch('showSweetAlert', [
                 'icon' => 'error',
@@ -357,5 +357,16 @@ class HomeLivewire extends Component
                 'text' => 'Gagal menghapus data: ' . $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Handle search button click for cashflow table
+     */
+    public function searchCashflow()
+    {
+        // Reset pagination to first page after search
+        $this->resetPage();
+        // Optionally, you can trigger a refresh or re-query if needed
+        // Livewire will re-render automatically since search is bound
     }
 }

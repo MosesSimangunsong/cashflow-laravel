@@ -244,8 +244,12 @@
                     <div class="row g-2">
                         <div class="col-md-3">
                             <label class="form-label">Cari Keterangan</label>
-                            <input type="text" class="form-control" placeholder="Cari..." 
-                                   wire:model.debounce.300ms="search">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Cari..." wire:model.lazy="search">
+                                <button class="btn btn-primary" wire:click="searchCashflow" type="button">
+                                    <i class="fas fa-search"></i> Cari
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Jenis</label>
