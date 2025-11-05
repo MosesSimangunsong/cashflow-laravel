@@ -38,8 +38,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Keterangan</label>
-                        <input type="text" class="form-control" wire:model="addDescription" placeholder="Contoh: Beli Kopi">
+                        <label class="form-label">Keterangan <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" wire:model="addDescription" placeholder="Contoh: Beli Kopi" required>
                         @error('addDescription')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -55,19 +55,7 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Bukti (Opsional)</label>
-                        <input type="file" class="form-control" wire:model="addAttachment">
-                        <div wire:loading wire:target="addAttachment" class="text-muted mt-1">
-                            Uploading...
-                        </div>
-                        @if ($addAttachment)
-                            <img src="{{ $addAttachment->temporaryUrl() }}" class="img-fluid rounded mt-2" style="max-height: 150px;">
-                        @endif
-                        @error('addAttachment')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    <!-- Foto/bukti tidak diminta saat tambah; tersedia di halaman detail jika diperlukan -->
 
                 </div>
                 <div class="modal-footer">

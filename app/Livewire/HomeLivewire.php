@@ -147,7 +147,6 @@ class HomeLivewire extends Component
     public $addAmount;
     public $addDescription;
     public $addNotes; // Untuk Trix Editor
-    public $addAttachment; // Untuk Upload Gambar
 
     // [MODIFIED] Nama fungsi dari addTodo() menjadi addCashflow()
     public function addCashflow()
@@ -159,21 +158,9 @@ class HomeLivewire extends Component
             'addAmount' => 'required|numeric|min:0',
             'addDescription' => 'required|string|max:255',
             'addNotes' => 'nullable|string', // Kebutuhan Trix Editor
-            'addAttachment' => 'nullable|image|max:2048', // Kebutuhan Olah Gambar (2MB Max)
         ]);
 
-        $path = null;
-        // [NEW] Kebutuhan Olah Gambar: Logika untuk menyimpan file
-        if ($this->addAttachment) {
-            $userId = $this->auth->id;
-            $dateNumber = now()->format('YmdHis');
-            $extension = $this->addAttachment->getClientOriginalExtension();
-            $filename = $userId . '_' . $dateNumber . '.' . $extension;
-            // Simpan di 'storage/app/public/attachments'
-            $path = $this->addAttachment->storeAs('attachments', $filename, 'public');
-        }
-
-        // [MODIFIED] Simpan cashflow ke database
+        // Simpan cashflow ke database (tanpa attachment di form tambah)
         Cashflow::create([
             'user_id' => $this->auth->id,
             'date' => $this->addDate,
@@ -181,11 +168,10 @@ class HomeLivewire extends Component
             'amount' => $this->addAmount,
             'description' => $this->addDescription,
             'notes' => $this->addNotes,
-            'attachment' => $path, // Simpan path gambar (atau null)
         ]);
 
         // [MODIFIED] Reset semua properti form 'add'
-        $this->reset(['addDate', 'addType', 'addAmount', 'addDescription', 'addNotes', 'addAttachment']);
+        $this->reset(['addDate', 'addType', 'addAmount', 'addDescription', 'addNotes']);
 
 
     // Reset pagination to show new data

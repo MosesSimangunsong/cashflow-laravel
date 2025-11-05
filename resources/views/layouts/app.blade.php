@@ -93,6 +93,19 @@
                 }
             });
 
+            // Sync Trix changes to Livewire: emit event with input id and content
+            document.addEventListener('trix-change', function(e) {
+                try {
+                    const inputId = e.target.getAttribute('input');
+                    const content = e.target.editor.getHTML();
+                    if (inputId) {
+                        Livewire.emit('trixUpdated', inputId, content);
+                    }
+                } catch (err) {
+                    // ignore
+                }
+            });
+
         });
     </script>
     @stack('scripts')

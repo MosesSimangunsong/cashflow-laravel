@@ -142,10 +142,7 @@
                                     }
                                 ]
                             },
-                            title: {
-                                text: 'Statistik Keuangan Per Bulan',
-                                align: 'center'
-                            },
+                            
                             xaxis: {
                                 categories: months,
                             },
@@ -248,10 +245,6 @@
                                 
                                 <input type="text" class="form-control" placeholder="Cari..." 
                                     wire:model.live.debounce.300ms="search">
-
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search"></i> Cari
-                                </button>
 
                             </div>
                         </div>
