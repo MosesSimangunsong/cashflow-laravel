@@ -167,7 +167,7 @@ class HomeLivewire extends Component
             'type' => $this->addType,
             'amount' => $this->addAmount,
             'description' => $this->addDescription,
-            'notes' => $this->addNotes,
+            'notes' => $this->addNotes
         ]);
 
         // [MODIFIED] Reset semua properti form 'add'
