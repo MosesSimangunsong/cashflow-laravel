@@ -105,6 +105,20 @@
                     // ignore
                 }
             });
+            document.addEventListener('setTrixContent', (event) => {
+            let element = document.getElementById(event.detail.id);
+            if (element) {
+                // Periksa apakah editor sudah ter-attach
+                if (element.editor) {
+                    element.editor.loadHTML(event.detail.content);
+                } else {
+                    // Jika belum, tunggu event 'trix-initialize'
+                    element.addEventListener('trix-initialize', () => {
+                        element.editor.loadHTML(event.detail.content);
+                    });
+                }
+            }
+        });
 
         });
     </script>

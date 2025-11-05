@@ -83,20 +83,7 @@
                 </div>
             @endif
             
-            <hr>
-
-            <!-- [MODIFIED] Menampilkan Catatan (Notes) dari Trix Editor -->
-            <h5 class="mb-3">Catatan Tambahan:</h5>
-            @if ($cashflow->notes)
-                <div class="trix-content">
-                    {!! $cashflow->notes !!}
-                </div>
-            @else
-                <p class="text-muted"><em>Tidak ada catatan tambahan.</em></p>
-            @endif
-
-            <hr>
-            <!-- Grafik/statistik dihapus sesuai permintaan -->
+            
         </div>
     </div>
 

@@ -37,9 +37,18 @@
                         @enderror
                     </div>
 
-                   <div class="mb-3">
+                   {{-- <div class="mb-3">
+                        <label class="form-label">Keterangan</label>
+                        <textarea class="form-control" rows="3" wire:model.defer="addDescription"></textarea>
+                        @error('addDescription')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div> --}}
+
+                    <input id="add_description" type="hidden" wire:model.defer="addDescription">
+                    <div class="mb-3" wire:ignore>
                         <label class="form-label">Keterangan</label>
-                        <textarea class="form-control" rows="3" wire:model.defer="addDescription"></textarea>
+                        <trix-editor input="add_description" class="form-control" style="min-height: 150px;"></trix-editor>
                         @error('addDescription')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -47,15 +56,7 @@
 
                     <input id="add_notes" type="hidden" name="addNotes" wire:model.defer="addNotes">
 
-                    <div class="mb-3" wire:ignore>
-                        <label class="form-label">Catatan (Opsional)</label>
-                        <trix-editor input="add_notes" class="form-control"
-                            style="min-height: 150px;"></trix-editor>
-                        
-                        @error('addNotes')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    
 
                     <!-- Foto/bukti tidak diminta saat tambah; tersedia di halaman detail jika diperlukan -->
 

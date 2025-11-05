@@ -146,7 +146,7 @@ class HomeLivewire extends Component
     public $addType;
     public $addAmount;
     public $addDescription;
-    public $addNotes; // Untuk Trix Editor
+    // public $addNotes; // Untuk Trix Editor
 
     // [MODIFIED] Nama fungsi dari addTodo() menjadi addCashflow()
     public function addCashflow()
@@ -157,7 +157,7 @@ class HomeLivewire extends Component
             'addType' => 'required|in:income,expense',
             'addAmount' => 'required|numeric|min:0',
             'addDescription' => 'required|string|max:255',
-            'addNotes' => 'nullable|string', // Kebutuhan Trix Editor
+            // 'addNotes' => 'nullable|string', // Kebutuhan Trix Editor
         ]);
 
         // Simpan cashflow ke database (tanpa attachment di form tambah)
@@ -167,11 +167,11 @@ class HomeLivewire extends Component
             'type' => $this->addType,
             'amount' => $this->addAmount,
             'description' => $this->addDescription,
-            'notes' => $this->addNotes
+            // 'notes' => $this->addNotes
         ]);
 
         // [MODIFIED] Reset semua properti form 'add'
-        $this->reset(['addDate', 'addType', 'addAmount', 'addDescription', 'addNotes']);
+        $this->reset(['addDate', 'addType', 'addAmount', 'addDescription']);
 
 
     // Reset pagination to show new data
@@ -193,7 +193,7 @@ class HomeLivewire extends Component
     public $editType;
     public $editAmount;
     public $editDescription;
-    public $editNotes; // Untuk Trix Editor
+    // public $editNotes; // Untuk Trix Editor
 
     // [MODIFIED] Nama fungsi dari prepareEditTodo()
     public function prepareEditCashflow($id)
@@ -211,7 +211,8 @@ class HomeLivewire extends Component
         $this->editType = $cashflow->type;
         $this->editAmount = $cashflow->amount;
         $this->editDescription = $cashflow->description;
-        $this->editNotes = $cashflow->notes;
+        $this->dispatch('setTrixContent', ['id' => 'edit_description', 'content' => $this->editDescription]);
+        // $this->editNotes = $cashflow->notes;
 
         // [NEW] Kebutuhan Trix Editor: Kirim event untuk mengisi Trix Editor (karena di-wire:ignore)
         $this->dispatch('setTrixContent', ['id' => 'edit_notes', 'content' => $cashflow->notes]);
@@ -229,7 +230,7 @@ class HomeLivewire extends Component
             'editType' => 'required|in:income,expense',
             'editAmount' => 'required|numeric|min:0',
             'editDescription' => 'required|string|max:255',
-            'editNotes' => 'nullable|string',
+            // 'editNotes' => 'nullable|string',
         ]);
 
         // [SECURITY FIX] Ambil data dan pastikan milik user yang login
@@ -246,11 +247,11 @@ class HomeLivewire extends Component
         $cashflow->type = $this->editType;
         $cashflow->amount = $this->editAmount;
         $cashflow->description = $this->editDescription;
-        $cashflow->notes = $this->editNotes;
+        // $cashflow->notes = $this->editNotes;
         $cashflow->save();
 
         // [MODIFIED] Reset properti 'edit'
-        $this->reset(['editCashflowId', 'editDate', 'editType', 'editAmount', 'editDescription', 'editNotes']);
+        $this->reset(['editCashflowId', 'editDate', 'editType', 'editAmount', 'editDescription']);
         
 
     // Reset pagination to show updated data

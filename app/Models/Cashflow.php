@@ -31,7 +31,7 @@ class Cashflow extends Model
         'type',
         'amount',
         'description', // Keterangan singkat
-        'notes',       // Catatan detail (untuk Trix Editor)
+        // 'notes',       // Catatan detail (untuk Trix Editor)
         'attachment',  // Bukti gambar (untuk Olah Gambar)
     ];
 

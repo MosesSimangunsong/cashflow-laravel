@@ -39,22 +39,24 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
+                        <label class="form-label">Keterangan</label>
+                        <textarea class="form-control" rows="3" wire:model.defer="editDescription"></textarea>
+                        @error('editDescription')
+                    s     <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div> --}}
+                    
+                    <input id="edit_description" type="hidden" wire:model.defer="editDescription">
+                    <div class="mb-3" wire:ignore>
                         <label class="form-label">Keterangan</label>
-                        <input type="text" class="form-control" wire:model="editDescription" placeholder="Contoh: Beli Kopi">
+                        <trix-editor input="edit_description" class="form-control" style="min-height: 150px;"></trix-editor>
                         @error('editDescription')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div class="mb-3" wire:ignore> <label class="form-label">Catatan (Opsional)</label>
-                        <input id="edit_notes" type="hidden" name="editNotes" wire:model.defer="editNotes">
-                        <trix-editor input="edit_notes" class="form-control" style="min-height: 150px;"></trix-editor>
-                        @error('editNotes')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
+                    
                     
 
                 </div>
