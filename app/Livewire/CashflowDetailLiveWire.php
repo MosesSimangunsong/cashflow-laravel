@@ -27,13 +27,9 @@ class CashflowDetailLivewire extends Component
     {
         $this->auth = Auth::user();
 
-        // [MODIFIED] Mengambil 'cashflow_id' dari rute.
-        // Pastikan Anda menggunakan nama parameter ini di file routes/web.php Anda.
-        $cashflow_id = request()->route('cashflow_id'); // <-- Ganti 'todo_id'
 
-        // [MODIFIED] Mencari Cashflow, bukan Todo
-        // [SECURITY FIX] Menambahkan 'where('user_id', ...)' 
-        // agar user tidak bisa melihat/mengedit data milik user lain.
+        $cashflow_id = request()->route('cashflow_id'); 
+
         $targetCashflow = Cashflow::where('id', $cashflow_id)
                                   ->where('user_id', $this->auth->id) 
                                   ->first();
@@ -44,7 +40,7 @@ class CashflowDetailLivewire extends Component
             return redirect()->route('app.home');
         }
 
-        // [MODIFIED] Assign ke properti $cashflow
+
         $this->cashflow = $targetCashflow;
         
         // Inisialisasi attachment yang ada (jika ada)
@@ -55,9 +51,7 @@ class CashflowDetailLivewire extends Component
 
     public function render()
     {
-        // [MODIFIED] Mengarahkan ke view 'cashflow-detail-livewire'
-        // Anda perlu membuat file view: 
-        // resources/views/livewire/cashflow-detail-livewire.blade.php
+
         return view('livewire.cashflow-detail-live-wire');
     }
 
